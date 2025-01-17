@@ -1,0 +1,693 @@
+---
+title: <center> <h1>**6110 Project Report **</h1> </center>  <br />
+author: "Members: Apeksha Kale, Chirag Pandey, Vaishnavi Rode"
+output: html_document
+date: "Date: 2022-11-15" 
+---
+<br />
+
+```{r setup, , include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+<br />
+
+## **1.Introduction**
+
+<br />
+
+**What is Craigslist?**
+
+“Craigslist” is a renowned name in every household.  It is an American-based advertising platform for sections like employment, housing, for sale, items wanted, services, community service, gigs, resumes, and discussion forums. In 1996, it changed to a web-based service and added more classified categories. In 2000, it began to spread to additional American and Canadian cities, and it presently includes 70 nations.
+
+We will be focusing on the vehicle-selling segment of Craigslist. Being one of the top-rated, convenient, and user-friendly platforms where one can buy and sell their vehicles, it can help the sellers to gain a reasonable price. It consists of a huge repository with relevant data and particulars of all used vehicles at a go in one location.
+
+[Wikipedia](https://en.wikipedia.org/wiki/Craigslist)
+
+<br />
+
+```{r echo=FALSE, out.width="50%"}
+knitr::include_graphics("projectpic.JPEG")
+
+```
+
+Vehicles are preferable in the USA over public transport as the use of vehicles is comparatively feasible and practical. We have chosen Craigslist as our topic since it is the top reputed platform for buying and selling vehicles.
+
+<br />
+
+## **2.Objective**
+
+<br />
+
+The main objective of Craigslist as a project is to analyze the data and find insights to help craigslist find answers to the below-mentioned questions: 
+
+* Which states have the highest number of vehicle listings?
+
+* What brands have the most expensive and least expensive vehicles among the listed vehicles??
+
+* What is the percentage of the listed vehicle as per the condition?
+
+* Which are the most important variables in price prediction?
+
+* Predict the best price to buy a used vehicle?
+
+**How the pricing problem will be solved?**
+
+We will be using supervised learning and dividing the data into training and testing sets. Based on training data, we will be predicting the “price” of every vehicle in the testing data set.
+
+To predict our dependent(target) variable “price”, we will be using independent variables like manufacture year, model of car, car's condition, craigslist region, etc. It will consist of all the relevant information to help craigslist buy the cars at a reasonable yet profitable price.
+
+<br />
+
+## **3. Data Collection**
+
+<br />
+
+[Kaggle link for reference](https://www.kaggle.com/datasets/austinreese/craigslist-carstrucks-data)
+
+
+The data is in CSV file format and its size is 1.45 GB. It has a total 426880 number of observations and 26 Variables. 
+Please find below the column names and descriptions:
+
+```{r echo=FALSE}
+
+Craigslist_data_var = read.csv("Variables.csv")
+
+
+```
+
+
+```{r echo=FALSE}
+knitr::kable(
+  Craigslist_data_var[1:26,1:2], caption = 'Data Information')
+```
+
+
+
+<br />
+
+## **4.Data Cleaning**
+
+<br />
+
+#### Importing required libraries:
+
+```{r,message=FALSE, warning=FALSE}
+library(plotly)
+library(dplyr)
+library(tidyverse)
+library(olsrr)
+library(caTools)
+library(xgboost)
+
+```
+
+<br />
+
+#### Loading data. 
+
+```{r, cache=TRUE}
+Craigslist_data = read.csv("Vehicles.csv")
+
+```
+<br />
+
+#### Note: Due to a computational issues, we cannot work on the whole data.
+#### We will take the first 100k records.
+
+```{r}
+Craigslist_data = Craigslist_data[1:100000,]
+
+```
+
+<br />
+
+#### Number of rows and columns.
+
+```{r}
+nrow(Craigslist_data)
+ncol(Craigslist_data)
+
+```
+<br />
+
+#### Cheking summary of data.
+
+```{r}
+summary(Craigslist_data)
+```
+<br />
+
+#### First 5 rocords in the data.
+```{r}
+head(Craigslist_data,5)
+```
+
+<br />
+
+#### Column names.
+```{r}
+colnames(Craigslist_data)
+```
+<br />
+
+#### Data structure.
+```{r}
+str(Craigslist_data)
+```
+
+
+<br />
+
+#### Removing unneeded columns.
+
+```{r}
+Craigslist_data = subset(Craigslist_data,select = -c(1,2,4,15,20,21,26))
+colnames(Craigslist_data)
+```
+
+#### A total of 7 columns are removed which does not give any useful information. They are `id`, `url`, `region_url`, `VIN`, `image_url`, `description`, `posting_date`.
+#### We are left with 19 columns.
+
+<br />
+
+
+#### Checking NA values in data.
+#### Replacing blanks with "NA" so we can handle NA values.
+
+```{r}
+
+Craigslist_data[Craigslist_data == ""] = NA
+```
+
+<br />
+
+#### Count of missing Values.
+```{r}
+colSums(is.na(Craigslist_data))
+```
+
+<br />
+
+#### Percentage of missing Values.
+```{r}
+colMeans(is.na(Craigslist_data))
+```
+#### `County` has 100% NA values. Removing the column.
+
+<br />
+
+```{r}
+Craigslist_data = subset(Craigslist_data,select = -c(16))
+colnames(Craigslist_data)
+```
+<br />
+
+#### Removing rows with NA values to have a clean dataset.
+
+```{r}
+Craigslist_data = na.omit(Craigslist_data)
+```
+<br />
+
+```{r}
+colSums(is.na(Craigslist_data))
+```
+#### Our dataset is clean, without any NA values.
+
+
+```{r}
+nrow(Craigslist_data)
+```
+#### 17571 records are left after cleaning.
+
+
+<br />
+
+## **5.Exploratory Data Analysis**
+
+<br />
+
+
+#### *Boxplot of price.*
+```{r, cache=TRUE}
+boxplot(Craigslist_data$price)
+
+```
+
+
+#### Range of price.
+```{r}
+range(Craigslist_data$price)
+```
+
+#### Removing outliers:
+```{r}
+Q1 <- quantile(Craigslist_data$price, .25)
+Q3 <- quantile(Craigslist_data$price, .75)
+IQR <- IQR(Craigslist_data$price)
+```
+
+
+#### keeping rows in the data frame that have values within 1.5*IQR of Q1 and Q3.
+```{r}
+
+Craigslist_data <- subset(Craigslist_data, Craigslist_data$price> (Q1 - 1.5*IQR) & Craigslist_data$price< (Q3 + 1.5*IQR))
+
+```
+```{r}
+range(Craigslist_data$price)
+```
+#### Outliers are removed and new price range is **0 to 36250**
+
+<br />
+
+```{r}
+nrow(Craigslist_data)
+```
+#### 16529 records left after outlier removal.
+
+<br />
+
+#### *Barplot for count of listed vehicles in different states.*
+
+```{r, cache=TRUE}
+data0 =  Craigslist_data %>% count(state, name = "Count")
+data0
+```
+```{r, cache=TRUE}
+
+plot_ly(
+  data = data0,
+  x = data0$Count,
+  y = data0$state,
+  name = "SF Zoo",
+  type = "bar", marker = list(color = 'rgb(158,202,225)',
+                      line = list(color = 'rgb(8,48,107)',
+                                  width = 1.5))
+) %>% 
+layout(yaxis = list(categoryorder = "total ascending", title = 'State'),title = 'State-wise count of listed vehicles', xaxis = list(title = 'Count'))
+
+```
+
+#### It shows that California has the highest count of listed vehicles and Delaware has the lowest count of listed vehicles. 
+
+
+<br />
+
+#### *Pie chart to find the percentage of vehicles as per their condition.*
+```{r}
+data1 =  Craigslist_data %>% count(condition, name = "Count")
+data1
+```
+```{r, cache=TRUE}
+Percentage= (data1$Count/sum(data1$Count))*100
+data1 = mutate(data1, Percentage = Percentage)
+data1
+
+```
+
+
+```{r, cache=TRUE}
+Condition = data1$condition
+Percentage = data1$Percentage
+
+pie1 = ggplot(data = data1, aes(x="", y = Percentage, fill = Condition)) +
+       geom_col(color = "White") +
+       coord_polar("y", start = 0) + 
+       geom_text(aes(label = paste0(round(Percentage,2), "%")), 
+                          position = position_stack(vjust = 0.6), size = 3) +
+       theme(panel.background = element_blank(),
+             axis.line = element_blank(),
+             axis.text = element_blank(),
+             axis.ticks = element_blank(),
+             axis.title = element_blank(), 
+             plot.title = element_text(hjust = 0.5, size = 18)) +
+       ggtitle("Percentage of vehicles as per the Condition") 
+       
+
+pie1
+```
+
+<br />
+
+#### We can see 52.8% of vehicles are in Excellent condition and 29.44% vehciles are in Good condition. A very small percentage of vehicles are Salvage. 
+
+<br />
+
+#### *Manufacturers with the highest price listed vehicles.*
+
+```{r, cache=TRUE}
+data2 = Craigslist_data %>%
+  group_by(manufacturer) %>%
+  summarise(max_price=max(price))
+
+data2 = data2[order(-data2$max_price), ]
+data2
+```
+
+```{r, cache=TRUE}
+data2$manufacturer <- factor(data2$manufacturer,                                   
+                  levels = data2$manufacturer[order(data2$max_price, decreasing = TRUE)])
+
+p <-  ggplot(data=data2, aes(x= manufacturer, y=max_price, fill= manufacturer)) +
+    geom_bar(stat="identity")+ ggtitle("Maximum price vehicle for each manufacturer")
+
+fig <- ggplotly(p)
+
+fig
+```
+#### GMC tops the charts with the highest price vehicle among all. 
+#### Ford is in the second spot.
+
+
+<br />
+
+#### *Manufacturers with the lowest price listed vehicles.*
+
+```{r, cache=TRUE}
+data3 = Craigslist_data %>%
+  group_by(manufacturer) %>%
+  summarise(min_price=min(price))
+
+data3 = data3[order(data3$min_price), ]
+data3
+```
+```{r, cache=TRUE}
+data3$manufacturer <- factor(data3$manufacturer,                                   
+                  levels = data3$manufacturer[order(data3$min_price, decreasing = FALSE)])
+
+p <-  ggplot(data=data3, aes(x= manufacturer, y=min_price, fill= manufacturer)) +
+    geom_bar(stat="identity")+ ggtitle("Minimum price vehicle for each manufacturer")
+
+fig <- ggplotly(p)
+
+fig
+```
+
+#### We can see many manufacturers have minimum price vehcile listed at 0$.
+#### We can see a lowest price listing for Saturn manufacturer with a genuine listed price of $300.
+
+
+<br />
+
+
+## **6.Splitting data into Train and Test**
+
+<br />
+
+
+#### As we have many categorical columns; we must convert them into factors to implement linear regression as we can pass only numerical variables. Converting categorical variables into factors.
+
+```{r, cache=TRUE}
+Craigslist_data$region = as.factor(Craigslist_data$region)
+Craigslist_data$year = as.factor(Craigslist_data$year)
+Craigslist_data$manufacturer = as.factor(Craigslist_data$manufacturer)
+Craigslist_data$model = as.factor(Craigslist_data$model)
+Craigslist_data$condition = as.factor(Craigslist_data$condition)
+Craigslist_data$cylinders = as.factor(Craigslist_data$cylinders)
+Craigslist_data$fuel = as.factor(Craigslist_data$fuel)
+Craigslist_data$title_status = as.factor(Craigslist_data$title_status)
+Craigslist_data$transmission = as.factor(Craigslist_data$transmission)
+Craigslist_data$drive = as.factor(Craigslist_data$drive)
+Craigslist_data$size = as.factor(Craigslist_data$size)
+Craigslist_data$type = as.factor(Craigslist_data$type)
+Craigslist_data$paint_color = as.factor(Craigslist_data$paint_color)
+Craigslist_data$state = as.factor(Craigslist_data$state)
+
+```
+<br />
+
+#### We can see factors for all categorical columns.
+
+```{r}
+str(Craigslist_data)
+```
+
+<br />
+
+#### Using 70% of the dataset as training set and 30% as testing set.
+
+```{r, cache=TRUE}
+set.seed(1)
+sample <- sample.split(Craigslist_data$price, SplitRatio = 0.7)
+train  <- subset(Craigslist_data, sample == TRUE)
+test   <- subset(Craigslist_data, sample == FALSE)
+```
+```{r}
+dim(train)
+dim(test)
+```
+
+
+<br />
+
+
+## **7.Modeling**
+#### Note: Due to converting the categorical column into factors, we have a lot many columns, that's why it into possible to show the whole summary of a model in an HTML file. We will be using str(summary) to show the results.
+
+<br />
+
+#### *Model1: Model with all independent variables.*
+```{r, cache=TRUE}
+
+model1 <- lm(price~., data = train)
+str(summary(model1))
+```
+
+#### We are getting an R square value of 0.74, It means that 74% of the variation in the price is explained by the independent variables.  The adjusted R square value is 0.64, which is more important in multiple regression because it looks at whether additional input variables are contributing to the model.
+
+<br />
+
+#### Let's try forward selection for our variable selection.
+
+```{r}
+#Forward_sec = ols_step_forward_p(model1,penter=.05)
+#Forward_sec
+```
+#### After running above step for 2 hours, we haven't received any results because of variables like `model`,`year`,`region`. They have 3835-factor values.
+#### Let us try modeling and forward selection without these columns.
+
+<br />
+
+#### *Model2: Model without variables - `model`,`year`,`region`.*
+
+```{r, cache=TRUE}
+train2 = subset(train,select = -c(1,3,5))
+model2 <- lm(price~., data = train2)
+str(summary(model2))
+
+```
+#### The adjusted R square value decreased to 0.30. It tells us that these variables are important and we cannot remove them. 
+
+<br />
+
+#### Let's try forward selection without these varaibles.
+
+```{r, cache=TRUE}
+Forward_sec = ols_step_forward_p(model2,penter=.05)
+Forward_sec
+```
+
+#### The results show us that after adding title status to the model, there is no further improvement in the Adjusted square value. We cannot take a forward selection approach in this case.
+
+
+#### We must try and test. Removing variables `lat` `long`, `state` as they will be correlated with region in our view.
+
+<br />
+<br />
+
+#### *Model3: Model without variables - `lat` `long`, `state`.*
+
+```{r}
+train3 = subset(train,select = -c(16,17,18))
+```
+
+
+```{r, cache=TRUE}
+
+model3 <- lm(price~., data = train3)
+str(summary(model3))
+
+```
+#### We see no improvement in the R square value. Adjusted R square also remains the same which means that these variables are insignificant and do not contribute. 
+#### We will go forward and use Model 3 for prediction.
+
+
+```{r}
+test3 = subset(test,select = -c(16,17,18))
+```
+
+<br />
+<br />
+
+
+
+#### *Residual histogram* 
+
+```{r, cache=TRUE}
+modelResiduals <- as.data.frame(residuals(model3)) 
+ggplot(modelResiduals, aes(residuals(model3))) +
+  geom_histogram(fill='deepskyblue', color='black')
+
+```
+
+
+
+#### We can see here that the residual plot shows the normal distribution. It proves the assumption of linear regression that residuals of the model are normally distributed.
+
+<br />
+
+
+#### In test data, replaced new levels by NA to solve problem of missing levels in test data set.
+
+```{r}
+test3$year[which(!(test3$year %in% unique(train3$year)))] <- NA
+test3$model[which(!(test3$model %in% unique(train3$model)))] <- NA
+test3 = na.omit(test3)
+
+```
+
+<br />
+
+#### Prediction and RMSE of Linear regression.
+
+```{r, cache=TRUE, message=FALSE, warning=FALSE}
+preds = predict(model3, test3)
+
+```
+
+<br />
+
+#### Actual vs Predicted 
+
+```{r, cache=TRUE}
+modelEval = cbind(test3$price, preds)
+colnames(modelEval) = c('Actual', 'Predicted')
+modelEval = as.data.frame(modelEval)
+modelEval$Predicted = round(modelEval$Predicted)
+head(modelEval)
+```
+<br />
+
+
+#### RMSE of Linear regression.
+
+```{r}
+
+mse1 = mean((modelEval$Actual - modelEval$Predicted)^2) 
+rmse1 = sqrt(mse1)
+rmse1
+```
+#### Root mean sqaure error for linear regression model is 5589.30
+
+<br />
+<br />
+
+#### *Model4: XG BOOST*
+
+#### For comparison, we want to use a more advanced algorithm. Let us try to predict `price` using XGBoost.
+
+
+#### Define predictor and response variables in training and testing set.
+```{r}
+
+train_x = data.matrix(train3[, -2])
+train_y = train3[,2]
+
+test_x = data.matrix(test3[, -2])
+test_y = test3[, 2]
+
+```
+
+#### Fit XGBoost model to training set
+```{r}
+
+xgb_train = xgb.DMatrix(data = train_x, label = train_y)
+xgb_test = xgb.DMatrix(data = test_x, label = test_y)
+
+```
+
+```{r}
+model4 = xgb.train(data = xgb_train, max.depth = 3, nrounds = 700, verbose = 0)
+
+```
+
+#### Prediction and RMSE of XGB.
+
+```{r}
+preds2 = predict(model4, xgb_test)
+```
+
+
+<br />
+
+#### Actual vs Predicted 
+
+```{r, cache=TRUE}
+modelEval2 <- cbind(test_y, preds2)
+colnames(modelEval2) <- c('Actual', 'Predicted')
+modelEval2 <- as.data.frame(modelEval2)
+modelEval2$Predicted <- round(modelEval2$Predicted)
+head(modelEval2)
+```
+<br />
+
+#### RMSE of XGB Model.
+
+```{r, cache=TRUE}
+mse2 = mean((test_y - preds2)^2) 
+rmse2 = sqrt(mse2)
+rmse2
+```
+#### Root mean sqaure error for XGB model is 4424.40.
+#### We are getting better results in comparison to linear regression model.
+
+<br />
+
+#### *Variable importance plot*
+
+```{r, cache=TRUE}
+importance_matrix = xgb.importance(colnames(xgb_train), model = model4)
+xgb.plot.importance(importance_matrix[1:14,])
+
+```
+
+<br />
+
+#### The above graph shows that `year` is the most important variable followed by `odometer`.
+
+<br />
+
+
+## **8.Conclusions**
+
+<br />
+
+#### 1. California has the highest number of listed vehicles.
+#### 2. GMC has the highest price listed vehicle and Saturn has the lowest price listed vehicle.
+#### 3. 52.8% of listed vehicles are in excellent condition and 29.44% of vehicles are in good condition. Only 0.39% of vehicles are Salvage.
+#### 4. Manufacture Year and Odometer are the most important variable, which totally makes sense.
+#### 5. We predicted the price using two different algorithms. XGBoost beats linear regression in terms of root mean square error.
+
+
+
+<br />
+
+
+## **9. Scope**
+
+<br />
+
+#### * If we have the better processing power, we can use more data, providing more information and producing better results.
+#### * With additional time, we can tune the parameters, which can improve the results.
+#### * Data validation could also be done.
+
+
+<br />
+
+
+<p style="text-align: center;  font-size:15pt;">**THANK YOU**</p>
+
+<br />
+<br />
