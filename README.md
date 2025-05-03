@@ -93,7 +93,7 @@ Analyze Craigslist vehicle listings (2019–2021) to answer:
 
 ---
 
-## 📞 Contact
+## Contact
 
 **Chirag Pandey**  
 – Email: chiragpandey0504@gmail.com  
