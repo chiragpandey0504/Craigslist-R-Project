@@ -21,23 +21,14 @@ The raw dataset is **not** included in this repo. To reproduce the analysis:
 
 ---
 
-📊 Key Analyses & Insights
-Price Distribution across regions and vehicle types
+## 📊 Key Analyses & Insights
 
-Top Cities by listing count and median price
+- **State distribution:** California has the highest number of vehicle listings, making it the primary market for used-car activity in our dataset :contentReference[oaicite:0]{index=0}:contentReference[oaicite:1]{index=1}.  
+- **Brand price extremes:** Among all makes, GMC commands the highest listing prices, while Saturn vehicles appear at the lowest end of the price spectrum :contentReference[oaicite:2]{index=2}:contentReference[oaicite:3]{index=3}.  
+- **Condition breakdown:** Over half of all listings (52.8%) are in “Excellent” condition, 29.44% are “Good,” and only 0.39% are flagged as “Salvage,” highlighting overall high quality of listed vehicles :contentReference[oaicite:4]{index=4}:contentReference[oaicite:5]{index=5}.  
+- **Feature importance:** In our price‐prediction model, **Year** followed by **Odometer** reading emerged as the most influential variables :contentReference[oaicite:6]{index=6}:contentReference[oaicite:7]{index=7}.  
+- **Model performance:** We compared Linear Regression vs. XGBoost; XGBoost achieved a lower RMSE of 4,424.40, outperforming the simpler linear approach :contentReference[oaicite:8]{index=8}:contentReference[oaicite:9]{index=9}.  
 
-Temporal Trends in listing volume and average price
-
-Make & Model popularity and pricing patterns
-
-Feature Impact: fuel type & odometer on sale price
-
-Please see the full narrative, tables, and figures in reports/Phase-3.html.
+> _For full context, narrative, tables and figures, please see the HTML report at_ `reports/Phase-3.html`.  
 
 
-📞 Contact
-Chirag Pandey
-– Email: chiragpandey0504@gmail.com
-– GitHub: @chiragpandey0504
-
-Feel free to clone, explore, and extend this analysis!
