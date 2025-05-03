@@ -97,10 +97,10 @@ Analyze Craigslist vehicle listings (2019–2021) to answer:
 2. **Install** required R packages:  
    ```r
    install.packages(c("tidyverse", "caret", "xgboost", "knitr", "kableExtra"))
-
 3. Open Final_project_file.Rmd in RStudio
 4. Knit to HTML or PDF to regenerate Phase-3.html
 
+---
 
 ## 📞 Contact
 
