@@ -1,48 +1,109 @@
 # Craigslist Cars & Trucks Data Analysis
 
-**An exploratory analysis of Craigslist vehicle listings (2019–2021) using R and R Markdown.**
 
 ---
 
-## 🚀 Project Overview
+## Table of Contents
 
-This project ingests and analyzes the **Craigslist Cars & Trucks** dataset (9 million+ records) to uncover insights on pricing, location, and vehicle characteristics. It was developed as a Phase-3 deliverable for our Data Science capstone.
+1. [Introduction](#introduction)  
+2. [Objective](#objective)  
+3. [Data Collection & Description](#data-collection--description)  
+4. [Exploratory Data Analysis](#exploratory-data-analysis)  
+5. [Modeling Approach](#modeling-approach)  
+6. [Key Findings & Conclusions](#key-findings--conclusions)  
+7. [Scope & Future Work](#scope--future-work)  
+8. [Project Structure](#project-structure)  
+9. [How to Reproduce](#how-to-reproduce)  
+10. [Contact](#contact)  
+
+---
+
+## Introduction
+
+“Craigslist” is one of the largest online classifieds platforms, with sections for jobs, housing, services—and of course, vehicle listings. This project focuses on the **Cars & Trucks** segment to uncover patterns in used-vehicle pricing and help sellers set fair prices.
 
 ---
 
-## 📝 Data Source
+## Objective
 
-The raw dataset is **not** included in this repo. To reproduce the analysis:
+Analyze Craigslist vehicle listings (2019–2021) to answer:
 
-1. Go to Kaggle:  
-   https://www.kaggle.com/datasets/austinreese/craigslist-carstrucks-data  
-2. Download **`listings.csv`** (≈2.5 GB uncompressed)  
+- Which U.S. states have the most listings?  
+- Which brands have the highest- and lowest-priced vehicles?  
+- What is the breakdown of vehicle condition?  
+- Which features drive price most strongly?  
+- How accurately can we predict a vehicle’s sale price?
+
+---
+
+## Data Collection & Description
+
+- **Source:** [Kaggle: Craigslist Cars & Trucks Data](https://www.kaggle.com/datasets/austinreese/craigslist-carstrucks-data)  
+- **Format:** CSV, ~1.45 GB  
+- **Observations:** 426,880  
+- **Variables:** 26 (e.g., `id`, `price`, `year`, `condition`, `odometer`, `region`, …)
 
 ---
 
-## 📊 Key Analyses & Insights
+## Exploratory Data Analysis
 
-- **Price Distribution**  
-  Explored the full range of listing prices across regions and vehicle categories. Boxplots and histograms highlight median values, outliers, and segment-specific spreads (e.g. SUVs vs. sedans).
-
-- **Top Markets**  
-  Identified which cities contribute the largest share of listings and command the highest median prices. Treemaps and summary tables reveal regional hotspots and pricing tiers.
-
-- **Temporal Trends**  
-  Tracked month-over-month and year-over-year changes in listing volume and average price. Line charts expose seasonality, growth spurts, and slow periods in the market.
-
-- **Make & Model Popularity**  
-  Ranked the most commonly listed makes and models, showing both volume leaders and which vehicles command premium pricing. Bar charts and heatmaps surface these patterns.
-
-- **Feature Impact on Price**  
-  Quantified how key attributes—fuel type, odometer reading, age—drive asking prices. Correlation matrices and regression summaries demonstrate depreciation rates and markup effects.
-
-> _For full context, narrative, tables and figures, please see the HTML report at_ `reports/Phase-3.html`.  
+- **Geographic Distribution:**  
+  California leads in total listings.  
+- **Brand Pricing:**  
+  - **GMC** has the highest-priced listing.  
+  - **Saturn** has the lowest-priced listing.  
+- **Condition Breakdown:**  
+  - 52.8 % Excellent  
+  - 29.4 % Good  
+  -  0.4 % Salvage  
+- **Feature Importance:**  
+  - **Year** and **Odometer** are the strongest predictors of price.
 
 ---
+
+## Modeling Approach
+
+- **Type:** Supervised regression  
+- **Features:** Year, manufacturer, model, condition, region, odometer, …  
+- **Split:** 80 % train / 20 % test  
+- **Algorithms:**  
+  1. Linear Regression  
+  2. XGBoost  
+- **Result:** XGBoost outperformed Linear Regression on RMSE.
+
+---
+
+## Key Findings & Conclusions
+
+1. **California** dominates in listing volume.  
+2. **GMC** and **Saturn** mark the price extremes.  
+3. Over **80 %** of vehicles are in Good or Excellent condition.  
+4. **Year** and **Odometer** explain most of the price variation.  
+5. **XGBoost** delivers the lowest prediction error.
+
+---
+
+## Scope & Future Work
+
+- **Scale Up:** Include more data and regions for deeper insights.  
+- **Hyperparameter Tuning:** Further refine XGBoost parameters.  
+- **Additional Models:** Evaluate Random Forests or Neural Nets.
+
+---
+
+## How to Reproduce
+
+1. **Clone** this repository  
+2. **Install** required R packages:  
+   ```r
+   install.packages(c("tidyverse", "caret", "xgboost", "knitr", "kableExtra"))
+
+3. Open Final_project_file.Rmd in RStudio
+4. Knit to HTML or PDF to regenerate Phase-3.html
+
 
 ## 📞 Contact
 
 **Chirag Pandey**  
 – Email: chiragpandey0504@gmail.com  
-– GitHub: [@chiragpandey0504](https://github.com/chiragpandey0504)  
+– GitHub: [@chiragpandey0504](https://github.com/chiragpandey0504)
