@@ -11,10 +11,8 @@
 4. [Exploratory Data Analysis](#exploratory-data-analysis)  
 5. [Modeling Approach](#modeling-approach)  
 6. [Key Findings & Conclusions](#key-findings--conclusions)  
-7. [Scope & Future Work](#scope--future-work)  
-8. [Project Structure](#project-structure)  
-9. [How to Reproduce](#how-to-reproduce)  
-10. [Contact](#contact)  
+8. [How to Reproduce](#how-to-reproduce)  
+9. [Contact](#contact)  
 
 ---
 
@@ -83,13 +81,6 @@ Analyze Craigslist vehicle listings (2019–2021) to answer:
 
 ---
 
-## Scope & Future Work
-
-- **Scale Up:** Include more data and regions for deeper insights.  
-- **Hyperparameter Tuning:** Further refine XGBoost parameters.  
-- **Additional Models:** Evaluate Random Forests or Neural Nets.
-
----
 
 ## How to Reproduce
 
